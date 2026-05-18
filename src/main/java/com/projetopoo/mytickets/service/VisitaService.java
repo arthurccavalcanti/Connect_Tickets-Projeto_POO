@@ -71,6 +71,19 @@ public class VisitaService {
     }
 
     @Transactional
+    public Visita atualizarAutorizacao(Long id, boolean autorizada) {
+        Visita visita = visitaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Visita não encontrada com ID: " + id));
+        Long currentUserId = securityUtils.getCurrentUserId();
+        Usuario autorizador = usuarioRepository.findById(currentUserId)
+                .orElseThrow(() -> new EntityNotFoundException("Autorizador não encontrado com ID: " + currentUserId));
+
+        visita.setIsAuthorized(autorizada);
+        visita.setAuthorizer(autorizador);
+        return visitaRepository.save(visita);
+    }
+
+    @Transactional
     public void excluirVisita(Long id) {
         Visita visita = visitaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Visita não encontrada com ID: " + id));
