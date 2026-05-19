@@ -5,7 +5,9 @@ import com.projetopoo.mytickets.exception.EntityNotFoundException;
 import com.projetopoo.mytickets.model.Evento;
 import com.projetopoo.mytickets.model.Inscricao;
 import com.projetopoo.mytickets.model.Usuario;
+import com.projetopoo.mytickets.model.dtos.CriarInscricaoDTO;
 import com.projetopoo.mytickets.model.dtos.InscricaoDTO;
+import com.projetopoo.mytickets.model.dtos.InscricaoResponseDTO;
 import com.projetopoo.mytickets.repository.EventoRepository;
 import com.projetopoo.mytickets.repository.InscricaoRepository;
 import com.projetopoo.mytickets.repository.UsuarioRepository;
@@ -60,6 +62,36 @@ public class InscricaoService {
         return inscricaoRepository.save(inscricao);
     }
 
+    @Transactional
+    public InscricaoResponseDTO criar(CriarInscricaoDTO dto, String emailUsuarioLogado) {
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado: " + emailUsuarioLogado));
+
+        Evento evento = eventoRepository.findById(dto.eventoId())
+                .orElseThrow(() -> new EntityNotFoundException("Evento não encontrado com ID: " + dto.eventoId()));
+
+        if (inscricaoRepository.existsByUserAndEvent(usuario, evento)) {
+            throw new BusinessException("Usuário já inscrito neste evento");
+        }
+
+        int visitorCount = 1;
+        List<Inscricao> inscricoesExistentes = inscricaoRepository.findByEvent_IdEvento(dto.eventoId());
+        int ocupado = inscricoesExistentes.stream().mapToInt(Inscricao::getVisitorCount).sum();
+
+        if (ocupado + visitorCount > evento.getCapacity()) {
+            throw new BusinessException("Capacidade insuficiente. Vagas disponíveis: " + (evento.getCapacity() - ocupado));
+        }
+
+        Inscricao inscricao = new Inscricao();
+        inscricao.setUser(usuario);
+        inscricao.setEvent(evento);
+        inscricao.setRegistrationAt(LocalDateTime.now());
+        inscricao.setVisitorCount(visitorCount);
+
+        Inscricao inscricaoSalva = inscricaoRepository.save(inscricao);
+        return toResponseDTO(inscricaoSalva);
+    }
+
     @Transactional(readOnly = true)
     public List<Inscricao> listarTodas() {
         return inscricaoRepository.findAll();
@@ -82,5 +114,16 @@ public class InscricaoService {
                 "Você não tem permissão para excluir esta inscrição."
         );
         inscricaoRepository.delete(inscricao);
+    }
+
+    public InscricaoResponseDTO toResponseDTO(Inscricao inscricao) {
+        return new InscricaoResponseDTO(
+                inscricao.getIdInscricao(),
+                inscricao.getUser().getName(),
+                inscricao.getEvent().getIdEvento(),
+                inscricao.getEvent().getEventName(),
+                inscricao.getRegistrationAt(),
+                inscricao.getVisitorCount()
+        );
     }
 }
