@@ -126,15 +126,15 @@ Authorization: Bearer {token}
 - **Story Users implementadas:** [Google Docs](https://docs.google.com/document/d/1c6c0XFHAeVdOe4d9dGdpWpzAMPqI-bRmF2OMzn7V9o8/edit?usp=sharing)
 - **Issues/Bugtracker:** [Ver issues](https://github.com/brunosm26/Connect_Tickets-Projeto_POO/issues)
 
+### Entrega 04 — Incremento Final
+
+- **Screencast:** [Assistir no YouTube](https://youtu.be/lkn-Brc8j_M)
+- **Histórias de Usuário (HU-01 e HU-02):** [historias-usuario.docx](docs/historias-usuario.docx)
+- **Issues/Bugtracker:** [Ver issues](https://github.com/brunosm26/Connect_Tickets-Projeto_POO/issues)
+
 <img width="1123" alt="issues" src="https://github.com/user-attachments/assets/74aeece3-3699-425c-a1a0-1f3e1261ed5e" />
 
 <img width="690" height="610" alt="story users" src="https://github.com/user-attachments/assets/9602f689-7ed6-4336-967e-cb4dacf60b89" />
-
----
-
-### Entrega 04 — Implementação Final
-
-- **Issues/Bugtracker:** [Ver issues](https://github.com/brunosm26/Connect_Tickets-Projeto_POO/issues)
 
 <img alt="issues entrega 04" src="https://raw.githubusercontent.com/brunosm26/Connect_Tickets-Projeto_POO/main/docs/entrega04-issues.png" />
 
