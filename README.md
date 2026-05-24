@@ -268,3 +268,14 @@ Linha do tempo das entregas, com link direto para cada commit no GitHub.
 ## Equipe
 
 Projeto acadêmico da disciplina de Programação Orientada a Objetos — ADS Regular.
+
+| # | Matrícula | Nome | E-mail |
+|---|---|---|---|
+| 1 | 2025100215 | Arthur Cavalcanti Tavares Correia | actc@cesar.school |
+| 2 | 2025100221 | Bruno José Cavalcanti Duarte Filho | bjcdf@cesar.school |
+| 3 | 2025100310 | Bruno Sottomayor Martin | bsm4@cesar.school |
+| 4 | 2025100299 | Caio Gilles Costa Medeiros de Souza | cgcms@cesar.school |
+| 5 | 2025200207 | Guilherme Alves de Souza | gas6@cesar.school |
+| 6 | 2025100258 | Manoel Henrique Nascimento e Silva | mhns@cesar.school |
+| 7 | 2025100315 | Maria Luiza Vieira Belo Leite Farias | mvblf@cesar.school |
+| 8 | 2025100315 | Ramon Taffarel Guimarães | rtg@cesar.school |
