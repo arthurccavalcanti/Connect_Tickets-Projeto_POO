@@ -55,7 +55,7 @@ class EventoServiceTest {
 
         Evento resultado = eventoService.criarEvento(dto);
 
-        assertThat(resultado.getEventName()).isEqualTo("Show Foo Fighters");
+        assertThat(resultado.getEventName()).isEqualTo("Show de Joao");
     }
 
     @Test
