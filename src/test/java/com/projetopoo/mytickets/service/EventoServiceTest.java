@@ -43,7 +43,7 @@ class EventoServiceTest {
 
     @Test
     void criarEvento_deveSalvarEvento_semCriadorOuTipo() {
-        EventoDTO dto = new EventoDTO(null, "Show Foo Fighters", "Descrição",
+        EventoDTO dto = new EventoDTO(null, "Show de Joao", "Descrição",
                 500, "Arena Norte", null, false,
                 LocalDateTime.now().plusDays(10), null,
                 150.0, 500, false, EventCategory.SHOW, null, null, null);
