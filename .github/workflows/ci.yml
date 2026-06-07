@@ -7,10 +7,41 @@ on:
     branches: [ main ]
 
 jobs:
+  # ========================================
+  # STAGE 1: BUILD
+  # ==========================================
   build:
     name: Build & Lint
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4   # Clona repositório no workspace do runner
 
+      - name: Setup Java 21
+        uses: actions/setup-java@v4 # Baixa SDK no runner
+        with:
+          java-version: '21'
+          distribution: 'temurin'   # Usa OpenJDK do Eclipse
+          cache: maven              # Armazena dependências do diretório .m2/ (para não precisar baixar em toda execução)
+
+      # Maven Wrapper: 
+      #   -B (batch mode, não interrompe para pedir input)
+      - name: Compile
+        run: ./mvnw -B compile -DskipTests  # compila e pula testes
+
+      - name: Checkstyle
+        run: ./mvnw -B checkstyle:check     # maven plugin linter
+
+      - name: SpotBugs
+        run: ./mvnw -B spotbugs:check       # analisa bytecode procurando bugs 
+
+  # ==========================================
+  # STAGE 2: TESTes
+  # ========================================
+  test:
+    name: Test (Unit & BDD)
+    needs: build            # Depende do job anterior
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,11 +53,57 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Compile
-        run: ./mvnw -B compile -DskipTests
+      - name: Start PostgreSQL Database
+        # Sobe o postgres para rodar testes
+        run: docker compose up -d postgres
 
-      - name: Checkstyle
-        run: ./mvnw -B checkstyle:check
+      - name: Wait for PostgreSQL
+        # Espera o postgres estar pronto
+        run: sleep 10 
 
-      - name: SpotBugs
-        run: ./mvnw -B spotbugs:check
+      - name: Run Tests
+        run: ./mvnw -B verify # Executa unit tests em src/test
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/connect_tickets
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+
+  # ==========================================
+  # STAGE 3: PACKAGE
+  # ==========================================
+  package:
+    name: Package Docker Image
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        # Faz build da imagem via dockerfile
+        run: docker build -t my-api-image:${{ github.sha }} .
+        
+      # Fazer push pra um docker registry
+      # run: docker push meu-registry/minha-imagem:${{ github.sha }}
+
+  # ==========================================
+  # STAGE 4: DEPLOY (STAGING)
+  # ==========================================
+  deploy:
+    name: Deploy to Staging
+    needs: package 
+    runs-on: ubuntu-latest
+    # só roda se for um push para a main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy Application
+        run: |
+          echo "Triggering deployment..."
+          curl -X POST "${{ secrets.DEPLOY_HOOK_URL }}"

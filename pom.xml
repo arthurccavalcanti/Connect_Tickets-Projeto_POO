@@ -98,6 +98,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>meu-jar</finalName>
 	</build>
 
 </project>
